@@ -61,6 +61,7 @@ class LabResultSeeder extends Seeder
                 'unit' => $unit,
                 'reference_min' => $min,
                 'reference_max' => $max,
+                'status' => LabResult::resolveStatus((float) $value, (float) $min, (float) $max),
                 'resulted_at' => now()->subHours($hoursAgo),
                 'notes' => $notes,
             ]);

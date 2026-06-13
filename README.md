@@ -174,6 +174,25 @@ php artisan test
 
 ---
 
+## Resumen de trabajo realizado
+
+| Sprint | Entregable | Ubicación |
+|--------|------------|-----------|
+| Sprint 1 — Análisis | Arquitectura, stack y diseño del módulo 22 ("Valores críticos") | [`docs/sprint-1-analisis.md`](docs/sprint-1-analisis.md) |
+| Sprint 2 — Implementación | Migraciones, modelos, controladores, rutas, seeder, vista Vue y pruebas del módulo | Ver sección [Módulo implementado](#módulo-implementado--valores-críticos-de-laboratorio-sprint-2) |
+| Sprint 3 — Diagramas UML | Casos de uso, clases y secuencia del módulo | [`docs/sprint-3-uml.md`](docs/sprint-3-uml.md) |
+
+Durante la verificación funcional también se corrigieron dos errores detectados en el proyecto base:
+
+- Un error de compatibilidad con PHP 8.4 en `app/Http/Middleware/JwtAuth.php` (colisión de nombre entre la clase `JwtAuth` y la fachada `JWTAuth`) que impedía levantar la API.
+- Un ajuste en `database/seeders/LabResultSeeder.php` para que los datos de ejemplo se guarden con el estado (`normal`/`crítico`) correctamente calculado.
+
+### Sobre el uso de herramientas de IA
+
+Como apoyo puntual durante el desarrollo se utilizó un asistente de IA (Claude) para: depurar el error de compatibilidad con PHP 8.4 mencionado arriba, generar un primer borrador de los diagramas UML (Sprint 3) y del documento de análisis (Sprint 1), y redactar partes de esta documentación. Todo el código del módulo fue revisado, probado (`php artisan test`) y validado de forma funcional antes de subirlo al repositorio.
+
+---
+
 ## Entrega esperada
 
 El estudiante debe trabajar sobre su propio fork del repositorio y entregar en Canvas el enlace al repositorio forkeado, junto con una breve descripción del módulo implementado y los commits principales que evidencian su avance.

@@ -115,8 +115,51 @@ Todas las rutas del API requieren la cabecera **`X-Tenant-ID`** (UUID del tenant
 | GET | `/auth/me` | Bearer JWT |
 | POST | `/auth/refresh` | Middleware `jwt.refresh` (renovación con ventana de refresh) |
 | POST | `/auth/logout` | Bearer JWT |
+| GET | `/patients` | Bearer JWT |
+| GET | `/lab-results` | Bearer JWT (filtros: `?critical=1`, `?patient_id=`) |
+| GET | `/lab-results/{id}` | Bearer JWT |
+| POST | `/lab-results` | Bearer JWT |
 
 Respuestas siempre en **JSON**.
+
+---
+
+## Módulo implementado — Valores críticos de laboratorio (Sprint 2)
+
+**Estudiante:** José Pablo Carías Flores (carné 1890-23-7587) — módulo 22 del Cuadro 2 ("Valores críticos": indicador o alerta para resultados de laboratorio fuera de rango).
+
+El análisis completo (arquitectura, stack y diseño del módulo) está en [`docs/sprint-1-analisis.md`](docs/sprint-1-analisis.md).
+
+### Qué se implementó
+
+- Tablas `patients` y `lab_results` (multitenant, `tenant_id` con FK a `tenants`).
+- Modelo `LabResult` que calcula automáticamente el campo `status` (`normal`, `critico_alto`, `critico_bajo`) y el atributo `is_critical` al guardar, comparando `value` contra `reference_min`/`reference_max`.
+- Endpoints `GET /api/v1/lab-results` (con filtros `critical=1` y `patient_id`), `GET /api/v1/lab-results/{id}`, `POST /api/v1/lab-results` y `GET /api/v1/patients`, todos bajo `tenant` + `jwt.auth`.
+- Seeder (`LabResultSeeder`) con pacientes y resultados de ejemplo (algunos normales y otros críticos) para el tenant demo `san-marcos-demo`.
+- Vista Vue **"Valores críticos"** (`resources/js/modules/lab-results/pages/LabResultsPage.vue`), accesible desde el menú principal, con:
+  - Tabla de resultados (paciente, prueba, valor, rango de referencia, estado, fecha).
+  - Resaltado visual y etiqueta de estado para resultados críticos.
+  - Resumen de cantidad de resultados críticos.
+  - Filtro "Mostrar solo valores críticos".
+- Pruebas automatizadas (`tests/Feature/LabResultTest.php`) que validan el cálculo del estado, el filtro `critical=1` y la protección de las rutas.
+
+### Cómo revisar / probar el módulo
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
+php artisan migrate --seed
+npm install
+npm run dev      # en otra terminal: php artisan serve
+```
+
+1. Inicia sesión (o regístrate) usando el tenant demo `00000000-0000-4000-8000-000000000001`.
+2. Entra al menú **"Valores críticos"**.
+3. Verifica que los resultados fuera de rango aparezcan resaltados con la etiqueta "Crítico (alto)" / "Crítico (bajo)".
+4. Activa "Mostrar solo valores críticos" y confirma que solo se listan esos registros.
+5. Corre las pruebas: `php artisan test --filter=LabResultTest`.
 
 ---
 
